@@ -1,0 +1,52 @@
+# 商业转载请联系作者获得授权，非商业转载请注明出处。
+# For commercial use, please contact the author for authorization. For non-commercial use, please indicate the source.
+# 协议(License)：署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0)
+# 作者(Author)：TK
+# 链接(URL)：https://www.tkzero.cn/
+# 来源(Source)：时空涟漪
+
+deployment文件解析
+apiVersion: 表示版本。版本查看命令：kubectl api-versions
+kind: 表示资源
+metadata: 表示元信息
+spec: 资源规范字段
+ 
+ 
+apiVersion: apps/v1        # 指定api版本，此值必须在kubectl api-versions中。业务场景一般首选”apps/v1“
+kind: Deployment        # 指定创建资源的角色/类型   
+metadata:          # 资源的元数据/属性 
+  name: demo      # 资源的名字，在同一个namespace中必须唯一
+  namespace: default     # 部署在哪个namespace中。不指定时默认为default命名空间
+  labels:          # 自定义资源的标签
+    app: demo
+spec:     # 资源规范字段，定义deployment资源需要的参数属性，诸如是否在容器失败时重新启动容器的属性
+  replicas: 1     # 声明副本数目
+  selector:     # 标签选择器
+    matchLabels:     # 匹配标签，需与上面的标签定义的app保持一致
+      app: demo
+   template:     # 定义业务模板，如果有多个副本，所有副本的属性会按照模板的相关配置进行匹配
+     metadata:     # 资源的元数据/属性 
+       labels:     # 自定义资源的标签
+         app: demo    # 模板名称必填
+          spec:  # 资源规范字段
+       containers:        # Pod中容器列表
+       - name: demo         # 容器的名字   
+         image: demo:v1         # 容器使用的镜像地址   
+         imagePullPolicy: IfNotPresent     # 每次Pod启动拉取镜像策略
+                                            # IfNotPresent ：如果本地有就不检查，如果没有就拉取。默认 
+                                            # Always : 每次都检查
+         ports:    # 需要暴露的端口库号列表
+           - name: http     # 端口号名称
+             containerPort: 8080     # 容器开放对外的端口 
+           # hostPort: 8080    # 容器所在主机需要监听的端口号，默认与Container相同
+             protocol: TCP     # 端口协议，支持TCP和UDP，默认TCP
+        env:    # 容器运行前需设置的环境变量列表
+        - name: string     # 环境变量名称
+          value: string    # 环境变量的值
+        resources:     # 资源管理。资源限制和请求的设置
+          limits:     # 资源限制的设置，最大使用
+            cpu: "1"         # CPU，"1"(1核心) = 1000m。将用于docker run --cpu-shares参数
+            memory: 500Mi     # 内存，1G = 1024Mi。将用于docker run --memory参数
+          requests:  # 资源请求的设置。容器运行时，最低资源需求，也就是说最少需要多少资源容器才能正常运行
+            cpu: 100m
+            memory: 100Mi

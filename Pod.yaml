@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: default
+  labels:
+    app: nginx
+spec:
+  containers:
+  - name: mynginx
+    image: mall-nginx:1.0
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 80
